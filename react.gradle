@@ -303,8 +303,15 @@ afterEvaluate {
         }
 
         if (enableVmCleanup) {
-            def task = tasks.findByName("package${targetName}")
-            task.doFirst(vmSelectionAction)
+            gradle.startParameter.getTaskNames().each {
+                if (it.startsWith("assemble")) {
+                    def task = tasks.findByName("package${targetName}")
+                    task.doFirst(vmSelectionAction)
+                } else if (it.startsWith("bundle")) {
+                    def task = tasks.findByName("build${targetName}PreBundle")
+                    task.doFirst(vmSelectionAction)
+                }
+            }
         }
     }
 }
